@@ -15,7 +15,7 @@ class ParanoidPost
   has_many :authors, dependent: :delete_all, inverse_of: :post
   has_many :titles, dependent: :restrict_with_error
 
-  scope :recent, -> {where(created_at: { "$lt" => Time.now, "$gt" => 30.days.ago })}
+  scope :recent, -> { where(created_at: { '$lt' => Time.now, '$gt' => 30.days.ago }) }
 
   before_destroy :before_destroy_stub
   after_destroy  :after_destroy_stub
@@ -59,7 +59,7 @@ class ParanoidPost
 
   class << self
     def old
-      where(created_at: { "$lt" => 30.days.ago })
+      where(created_at: { '$lt' => 30.days.ago })
     end
   end
 end

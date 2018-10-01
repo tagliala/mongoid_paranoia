@@ -1,7 +1,7 @@
 class Address
   include Mongoid::Document
 
-  field :_id, type: String, default: ->{ street.try(:parameterize) }
+  field :_id, type: String, default: -> { street.try(:parameterize) }
 
   attr_accessor :mode
 
@@ -24,10 +24,11 @@ class Address
 
   embedded_in :addressable, polymorphic: true do
     def extension
-      "Testing"
+      'Testing'
     end
+
     def doctor?
-      title == "Dr"
+      title == 'Dr'
     end
   end
 
@@ -35,11 +36,11 @@ class Address
 
   belongs_to :account
 
-  scope :without_postcode, -> {where(postcode: nil)}
-  scope :rodeo, -> {
-    where(street: "Rodeo Dr") do
+  scope :without_postcode, -> { where(postcode: nil) }
+  scope :rodeo, lambda {
+    where(street: 'Rodeo Dr') do
       def mansion?
-        all? { |address| address.street == "Rodeo Dr" }
+        all? { |address| address.street == 'Rodeo Dr' }
       end
     end
   }
@@ -47,7 +48,7 @@ class Address
   validates_presence_of :street, on: :update
   validates_format_of :street, with: /\D/, allow_nil: true
 
-  def set_parent=(set = false)
+  def set_parent=(set = false) # rubocop:disable Naming/AccessorMethodName
     self.parent_title = addressable.title if set
   end
 
@@ -57,11 +58,11 @@ class Address
 
   class << self
     def california
-      where(state: "CA")
+      where(state: 'CA')
     end
 
     def homes
-      where(address_type: "Home")
+      where(address_type: 'Home')
     end
 
     def streets

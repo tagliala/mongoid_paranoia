@@ -1,0 +1,32 @@
+require: rubocop-rspec
+
+AllCops:
+  TargetRubyVersion: 2.2
+  Exclude:
+    - 'vendor/bundle/**/*'
+
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
+
+Metrics/LineLength:
+  Enabled: false
+
+Naming/FileName:
+  Exclude:
+    - 'lib/mongoid-paranoia.rb'
+
+RSpec/LetSetup:
+  Enabled: false
+
+RSpec/MultipleExpectations:
+  Enabled: false
+
+RSpec/NamedSubject:
+  Enabled: false
+
+RSpec/NestedGroups:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false

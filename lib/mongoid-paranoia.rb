@@ -1,1 +1,1 @@
-require "mongoid/paranoia"
+require 'mongoid/paranoia'

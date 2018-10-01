@@ -1,4 +1,3 @@
-# encoding: utf-8
 module Mongoid
   module Paranoia
     module Document
@@ -38,7 +37,7 @@ module Mongoid
           if !doc.embedded? || parent.new_record? || doc.paranoid?
             destroy_document(relation, doc)
           else
-            parent.flagged_destroys.push(->{ destroy_document(relation, doc) })
+            parent.flagged_destroys.push(-> { destroy_document(relation, doc) })
           end
         end
       end
@@ -62,7 +61,7 @@ module Mongoid
           # @return [ Document, nil ] The deleted document or nil if nothing deleted.
           #
           # @since 2.0.0.rc.1
-          def delete(document)
+          def delete(document) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Metrics/PerceivedComplexity
             execute_callback :before_remove, document
             doc = _target.delete_one(document)
             if doc && !_binding?

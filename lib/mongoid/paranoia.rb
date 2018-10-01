@@ -1,11 +1,9 @@
-# encoding: utf-8
 require 'mongoid/paranoia/monkey_patches'
 require 'mongoid/paranoia/configuration'
 require 'active_support'
 require 'active_support/deprecation'
 
 module Mongoid
-
   # Include this module to get soft deletion of root level documents.
   # This will add a deleted_at field to the +Document+, managed automatically.
   # Potentially incompatible with unique indices. (if collisions with deleted items)
@@ -23,7 +21,7 @@ module Mongoid
       attr_accessor :configuration
     end
 
-    def self.configuration
+    def self.configuration # rubocop:disable Lint/DuplicateMethods
       @configuration ||= Configuration.new
     end
 
@@ -96,8 +94,9 @@ module Mongoid
     # @since 1.0.0
     alias orig_remove :remove
 
-    def remove(_ = {})
+    def remove(_ = {}) # rubocop:disable Naming/UncommunicativeMethodParamName
       return false unless catch(:abort) { apply_delete_dependencies! }
+
       time = self.deleted_at = Time.now
       _paranoia_update('$set' => { paranoid_field => time })
       @destroyed = true
@@ -127,9 +126,9 @@ module Mongoid
     #
     # @since 1.0.0
     def destroyed?
-      (@destroyed ||= false) || !!deleted_at
+      (@destroyed ||= false) || !deleted_at.nil?
     end
-    alias :deleted? :destroyed?
+    alias deleted? destroyed?
 
     # Restores a previously soft-deleted document. Handles this by removing the
     # deleted_at flag.
@@ -146,8 +145,8 @@ module Mongoid
     # @since 1.0.0
     def restore(opts = {})
       run_callbacks(:restore) do
-        _paranoia_update("$unset" => { paranoid_field => true })
-        attributes.delete("deleted_at")
+        _paranoia_update('$unset' => { paranoid_field => true })
+        attributes.delete('deleted_at')
         @destroyed = false
         restore_relations if opts[:recursive]
         true
@@ -160,13 +159,14 @@ module Mongoid
     end
 
     def restore_relations
-      self.relations.each_pair do |name, association|
+      relations.each_pair do |name, association|
         next unless association.dependent == :destroy
-        relation = self.send(name)
-        if relation.present? && relation.paranoid?
-          Array.wrap(relation).each do |doc|
-            doc.restore(:recursive => true)
-          end
+
+        relation = send(name)
+        next unless relation.present? && relation.paranoid?
+
+        Array.wrap(relation).each do |doc|
+          doc.restore(recursive: true)
         end
       end
     end
@@ -180,7 +180,7 @@ module Mongoid
     #
     # @return [ Collection ] The root collection.
     def paranoid_collection
-      embedded? ? _root.collection : self.collection
+      embedded? ? _root.collection : collection
     end
 
     # Get the field to be used for paranoid operations.
